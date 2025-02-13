@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Lanzar el Dado</h1>
+    <p>Haz clic en el botón para lanzar el dado:</p>
+    <button onclick="lanzarActualizar()">Lanzar Dado</button>
+    <button onclick="verResultados"()>Ver Resultados</button>
+   <table>
+    <thead>
+        <tr>
+            <th>dado1</th>
+            <th>dado2</th>
+            <th>suma</th>
+       </tr> 
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                 <img id="dado1" src="./img/1.png">
+            </td>
+            <td>
+                 <img id="dado2" src="./img/2.png">
+            </td> 
+            <td id="suma">
+                3
+            </td>
+       </tr> 
+    </tbody>
+   </table> 
+   <p>todas las sumas</p>
+   <p id="sumas"></p>
+   <script>
+    // Funcion que lanza un dado
+    function lanzarDado(){
+        return Math.floor(Math.random() * 6) + 1;
+    }
+
+    // Funcion que lanza dos dados y actualiza la tabla
+    async function lanzarActualizar(){
+        let dado1 = lanzarDado();
+        let dado2 = lanzarDado();
+        let suma = dado1 + dado2;
+
+        // Actualizar la tabla
+        let columDado1 = document.getElementById("dado1");
+        let columDado2 = document.getElementById("dado2");
+        let columnSuma = document.getElementById("suma");
+
+        columDado1.src = obtenerNombre(dado1);
+        columDado2.src = obtenerNombre(dado2);
+        columnSuma.innerHTML = suma;
+
+        // Sumar a la API los resultados
+        await fetch("https://crudcrud.com/api/9c8c1905de144542a7e73bc17e6e1288/resultados", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                dado1: dado1,
+                dado2: dado2,
+                suma: suma
+            })
+        });
+    }
+
+    function obtenerNombre(valor){
+        return "./img/" + valor + ".png";
+    }
+
+    async function verResultados() {
+        console.log("inicio de la peticion");
+        let respuesta = await fetch("https://crudcrud.com/api/9c8c1905de144542a7e73bc17e6e1288/resultados");
+        let datos = await respuesta.json();
+        console.log("Datos Obtenidos", datos);
+
+        let texto = "";
+            datos.forEach(element => {
+                texto = texto + element.suma + " ";
+            });
+        document.getElementById("sumas".innerHTML=texto);
+        
+    }
+
+   </script>
+</body>
+
+</html>
